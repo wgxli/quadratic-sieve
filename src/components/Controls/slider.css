@@ -1,0 +1,73 @@
+#controls .slider {
+    padding: 10px 20px;
+}
+
+#controls .slider .name {
+    font-size: 14px;
+    color: hsl(200, 10%, 40%);
+    margin-bottom: 8px;
+}
+
+
+#controls .slider .value {
+    font-size: 26px;
+    margin: 0;
+    position: relative;
+}
+
+#controls .slider .value .icon {
+    position: absolute;
+    margin-left: auto;
+    right: 0;
+    font-size: 36px;
+    color: hsl(200, 10%, 70%);
+}
+
+#controls .slider.temperature .mark {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#controls .slider.temperature .mark .aux-label {
+    font-size: 12px;
+    margin: 0 10px;
+}
+
+
+@media (max-width: 800px) {
+    #controls .slider {
+        padding: 0px 15px;
+        margin-bottom: -8px;
+    }
+
+    #controls .slider .name {
+        font-size: 11px;
+        margin-bottom: 3px;
+    }
+
+    #controls .slider .value {
+        font-size: 24px;
+        margin-bottom: -14px;
+    }
+
+    #controls .slider .value .icon {
+        font-size: 30px;
+        top: -4px;
+    }
+
+    #controls .slider .MuiSlider-markLabel {
+        margin-top: -12px;
+    }
+}
+
+@media (max-width: 600px) {
+    #controls .slider.coupling {
+        display: none;
+    }
+
+    #controls .slider .name {
+        font-size: 12px;
+    }
+}
+
