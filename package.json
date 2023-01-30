@@ -5,7 +5,10 @@
   "homepage": "https://samuelj.li/ising-spin-model",
   "dependencies": {
     "@material-ui/core": "^4.11.0",
+    "big-integer": "^1.6.51",
+    "bigint-isqrt": "^0.3.2",
     "kefir": "^3.8.8",
+    "mui": "^0.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-icons": "^3.11.0",

@@ -8,20 +8,22 @@ let gl = null;
 let currentState = null;
 let nextState = null;
 
-let currAverage = null;
-let nextAverage = null;
-
 let framebuffer = null;
 let program = null;
 
 // Hyperparameters of simulation
 let state = {
-    coupling: 0.5,
-    field: 0,
-    temperature: 283.65,
-    iteration: 0,
-    pass: 0,
-    random_seed: 0,
+    pass: 0, // Render pass
+    baseOffset: 0, // Index offset of x_0 from start of grid
+    highlight: 0.5, // Index of square to highlight
+    highlightMod: 0, // Highlight modulo p
+    highlightAlt: 0.5, // Second residue class to highlight (optional)
+
+    logSqrtN: 0,
+    delta: 0, // x_0 - sqrt(N)
+
+    prime: 0, // which p to sieve by
+    residue: 0, // residue mod p to sieve
 };
 
 // Location of GLSL uniforms.
@@ -85,9 +87,9 @@ function createTexture() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    initializeTexture();
     return texture;
 }
+
 
 function createUniforms() {
     // Initialize float uniforms
@@ -103,17 +105,14 @@ function createUniforms() {
 
 
 // GLSL Update Functions
-function initializeTexture() {
-    // Initialize empty texture
-    let data = []
-    let [width, height] = [gl.canvas.width, gl.canvas.height];
-    for (let i = 0; i < width * height * 4; i++) {
-        data.push((Math.random() < 0.5) ? 0 : 255);
-    }
+function initializeTexture(texture, width, height) {
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    console.log('Initializing texture', width, height);
     gl.texImage2D(
         gl.TEXTURE_2D, 0, gl.RGBA,
         width, height, 0,
-        gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(data));
+        gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.uniform2f(uniforms.resolution, width, height);
 }
 
@@ -126,7 +125,7 @@ function setState(name, value) {
 
 
 // Main initialization function
-function start() {
+function initGL() {
     if (gl !== null) {return;}
 
     // Get WebGL context
@@ -140,63 +139,85 @@ function start() {
     nextState = createTexture();
     currentState = createTexture();
 
-    currAverage = createTexture();
-    nextAverage = createTexture();
-
     framebuffer = gl.createFramebuffer();
-
 
     createUniforms();
 
-    // Register resize handler
-    window.addEventListener('resize', onResize);
-    onResize();
-
-    render();
+    handleResize(gl.canvas.width, gl.canvas.height);
 }
 
-function onResize() {
-    gl.bindTexture(gl.TEXTURE_2D, currentState);
-    initializeTexture();
-    gl.bindTexture(gl.TEXTURE_2D, nextState);
-    initializeTexture();
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+function handleResize(width, height) {
+    initializeTexture(currentState, width, height);
+    initializeTexture(nextState, width, height);
+    setState('baseOffset', Math.round(width * height / 2));
+    gl.viewport(0, 0, width, height);
 }
 
-let frame  = 0;
-function render() {
-    gl.bindTexture(gl.TEXTURE_2D, currentState);
+function initSieve(N, base) {
+    // Initialize sieve parameters
+    const sqrtN = Math.sqrt(N);
+    const delta = base.times(base).minus(N) / (base + sqrtN); // Numerically stable computation of base - sqrt(N)
+    setState('logSqrtN', Math.log(sqrtN));
+    setState('delta', delta);
 
     // Render to texture
     setState('pass', 0);
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.framebufferTexture2D(
+        gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0,
+        gl.TEXTURE_2D, currentState, 0
+    );
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+    renderSieve();
+}
+
+function updateSieve(residue, prime) {
+    console.log('Sieving positions', residue, 'mod', prime);
+
+    // Render to texture
+    setState('pass', 1);
+    setState('prime', prime);
+    setState('residue', residue);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+    gl.bindTexture(gl.TEXTURE_2D, currentState);
     gl.framebufferTexture2D(
         gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0,
         gl.TEXTURE_2D, nextState, 0
     );
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-    // Render to screen
-    setState('pass', 1);
-    gl.bindTexture(gl.TEXTURE_2D, nextState);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-
     // Swap textures
     let temp = currentState;
     currentState = nextState;
     nextState = temp;
-
-    // Toggle iteration (odd/even)
-    setState('iteration', 1 - state.iteration);
-    setState('random_seed', Math.random());
-
-    frame += 1;
-    requestAnimationFrame(render);
 }
 
-function initSieve(handleResponse) {
-    setTimeout(start, 1000);
+function renderSieve() {
+    // Render to screen
+    console.log('render', state);
+    setState('pass', 2);
+    gl.bindTexture(gl.TEXTURE_2D, currentState);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
 
-export {initSieve, setState};
+function getRelations() {
+    renderSieve();
+
+    const {width, height} = gl.canvas;
+    const data = new Uint8Array(4*width*height);
+    gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+
+    const relations = [];
+    for (let i = 0; i < width*height; i++) {
+        if (data[4*i+3] < 255) {
+            relations.push(i);
+        }
+    }
+    console.log(relations);
+    return relations;
+}
+
+export {initGL, initSieve, updateSieve, renderSieve, setState, handleResize, getRelations};

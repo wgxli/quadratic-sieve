@@ -4,6 +4,8 @@
     position: absolute;
     top: 0;
     left: 0;
+
+    image-rendering: pixelated;
 }
 
 .loading {
@@ -26,8 +28,39 @@
     z-index: -10;
 }
 
+.tooltip {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+
+    padding: 5px 20px;
+    padding-bottom: 130px;
+    min-width: 180px;
+
+    display: flex;
+    flex-direction: column;
+
+    background-color: hsla(213, 5%, 15%, 0.3);
+    border: 1px solid hsla(213, 5%, 90%, 0.1);
+    box-shadow: -1px -1px 4px hsla(213, 10%, 10%, 0.1);
+
+    border-radius: 8px 0 0 0;
+    backdrop-filter: blur(6px);
+    color: white;
+    font-size: 22px;
+    line-height: 1;
+
+    z-index: 100;
+}
+
+
 @media (max-width: 800px) {
     .loading {
         font-size: 50px;
+    }
+
+    .tooltip {
+        font-size: 16px;
+        padding-bottom: 135px;
     }
 }
