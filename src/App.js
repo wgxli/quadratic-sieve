@@ -83,7 +83,7 @@ function App() {
 
         const readoutInterval = (cellSize < 5) ? 100 : 10;
 
-        const shouldRender = !suppressRender | (pIdx % readoutInterval == 0);
+        const shouldRender = !suppressRender | (pIdx % readoutInterval === 0);
 
         if (t1 !== null) {
             updateSieve(t1, p);

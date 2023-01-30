@@ -41,7 +41,7 @@ function Graphics({width, height, base, N, setHighlighted}) {
             setFaded(false);
             setTimeout(() => {setFaded(true);}, 3000);
         }
-    }, [X]);
+    }, [X, setHighlighted]);
 
     return <>
         <div className='loading'>Loading...</div>

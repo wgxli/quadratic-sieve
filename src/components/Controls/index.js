@@ -8,8 +8,6 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 
-import Slider from './Slider.js'
-
 import './index.css';
 
 function handleTextChange(v, setN, setTextState) {
