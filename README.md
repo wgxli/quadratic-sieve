@@ -14,9 +14,12 @@ Sieving is done on the GPU in WebGL. The linear algebra step is done on the CPU.
 * Once enough smooth values are collected, click the `Complete Factorization` button to finalize the process.
 
 During the finalization step, an *exponent vector* is computed for each smooth value $y$. The $i$-th entry of this vector is the exponent of the prime $p_i$ in the prime factorization of $y$. We can construct a square by finding a linearly dependent subset of exponent vectors modulo 2.
+For this step to succeed, the number of relations must be larger than the number of primes in the factor base.
 
 Finally, we obtain two distinct squares $a^2 \equiv b^2$ modulo $N$. The factorization $a^2 - b^2 = (a+b) (a-b)$ is thus very likely to give a nontrivial factor of $N$.
 
 ## Tips
 * If you can't get enough relations, decrease the cell size to increase the sieving area.
+* Sometimes, clicking the `Sieve` button does nothing. This occurs when $N$ is not a quadratic residue modulo $p$, so no values can be divisible by $p$.
+* Sieving for longer is not always better! The number of relations needed grows with the number of primes sieved.
 * On desktop, setting the cell size too small (~1 or 2) may cause most relations to fail verification. This occurs because the number of sieving cells exceeds the faithful range for representation of integers in WebGL.
