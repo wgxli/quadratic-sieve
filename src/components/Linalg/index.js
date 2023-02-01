@@ -201,7 +201,7 @@ function Linalg({open, handleClose, relations, factorBase, N, base}) {
                 (result === null ? 'Constructing square congruence (may take a while)...' : <>
                     Combining {result.length} of the relations gives the congruence
                     <BlockMath>{`${result.a.toString()}^2`}</BlockMath>
-                    <BlockMath>{`\\cong ${result.b.toString()}^2 \\, (\\mathrm{mod}\\, N),`}</BlockMath>
+                    <BlockMath>{`\\equiv ${result.b.toString()}^2 \\, (\\mathrm{mod}\\, N),`}</BlockMath>
                     which produces the nontrivial factorization
                     <BlockMath>{`N = ${result.p} \\times ${result.q}.`}</BlockMath>
                 </>)
