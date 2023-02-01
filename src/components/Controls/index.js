@@ -14,7 +14,7 @@ function handleTextChange(v, setN, setTextState) {
     const value = parseInt(v);
     if (value > 0 & !isNaN(v) & !isNaN(value)) {
         if (v.length > 30) {
-            setTextState({Nstr: v, error: true, helper: 'Might take too long to factor'});
+            setTextState({Nstr: v, error: false, helper: 'Might take too long to factor'});
         } else {
             setTextState({Nstr: v, error: false, helper: ' '});
         }

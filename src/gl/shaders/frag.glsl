@@ -19,12 +19,14 @@ varying vec2 v_texCoord;
 const float MAX_VALUE = 100.; // Maximum range of representable floats
 
 
+// Unpack float from color
 float decode(vec4 v) {
     v *= 255.0;
     float decoded = (v.x + (v.y + (v.z + v.w/256.0)/256.0)/256.0)/256.0;
     return MAX_VALUE * decoded - 0.01; // Remap from [0, 1]
 }
 
+// Pack float into color
 vec4 encode(float value) {
     value = (value + 0.01) / MAX_VALUE; // Remap to [0, 1]
 
@@ -39,6 +41,7 @@ vec4 encode(float value) {
     encoded[3] += value/255.0;
     return encoded;
 }
+
 
 void main() {
     // Render Passes
