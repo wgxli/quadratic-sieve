@@ -10,6 +10,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 import './index.css';
 
+
 function handleTextChange(v, setN, setTextState) {
     const value = parseInt(v);
     if (value > 0 & !isNaN(v) & !isNaN(value)) {
@@ -24,9 +25,12 @@ function handleTextChange(v, setN, setTextState) {
     }
 }
 
+
+// Outside of React state system to avoid issues with setTimeout
 let autosieve = false;
 
 function Controls({state, setN, sieve, setHighlight, setCellSize, linalgOpen}) {
+    // These initial values must be updated in App.js as well.
     const [textState, setTextState] = useState({
         Nstr: '853972440679',
         error: false,

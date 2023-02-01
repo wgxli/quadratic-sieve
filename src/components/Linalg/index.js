@@ -7,6 +7,15 @@ import {isqrt} from '../../mathUtils';
 import './index.css';
 
 
+
+/*
+ * This component implements the linear algebra step.
+ * It constructs the matrix of exponent vectors for each relation,
+ * verifies the relations, and then computes the nullspace
+ * via Gaussian elimination over GF(2).
+ */
+
+
 // Finds index of smallest nonnegative entry.
 function argmin(arr, max) {
     let min = max;
@@ -80,6 +89,11 @@ function nullSpace(mat, k) {
     return output;
 }
 
+
+// Computes the binary matrix of exponent vectors
+// given a list of relations. 
+// Also verifies that each relation is actually
+// smooth over the factor base.
 function computeMatrix(relations, factorBase, N, base) {
     const x = []; // Polynomial inputs
     const y = []; // Polynomial outputs
@@ -126,7 +140,7 @@ function computeMatrix(relations, factorBase, N, base) {
         matT.push(row);
     }
 
-    // Prune out unused factor base primes
+    // Prune out unused factor base primes (from failed relations)
     matT = matT.filter(row => row.includes(1));
     if (matT.length >= matT[0].length) {
         return {bad};
@@ -135,6 +149,17 @@ function computeMatrix(relations, factorBase, N, base) {
     return {x, y, mat: matT};
 }
 
+// Assemble relations into a square
+// until the resulting factorization is nontrivial.
+//
+// a is the product of several x values.
+//
+// b is the product of several y values,
+// chosen such that b is the square of some
+// integer s.
+//
+// Since y = x^2 (mod N), it follows that a^2 = s^2 mod N,
+// as desired.
 function completeFactorization(x, y, mat, N) {
     rowReduce(mat);
     const nullity = mat[0].length - mat.length;

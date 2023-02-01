@@ -21,6 +21,25 @@ import {
 import './App.css';
 
 
+/*
+ * Explanation of parameters
+ *
+ *
+ * N: The number to factor.
+ * p: The current prime being sieved.
+ * pIdx: The index of the current prime being sieved (in the list of all primes).
+ * base: The center of the range of x to sieve. Also referred to as x_0 throughout the code.
+ * cellSize: The size of one sieving cell, in quarter-pixels.
+ * relations: The list of x for which x^2-N is smooth.
+ *
+ *
+ *
+ */
+
+
+
+
+
 // Get residue classes to sieve
 function getSieve(N, p, base) {
     const qr = modSqrt(N.mod(p), p);
@@ -35,14 +54,13 @@ function getSieve(N, p, base) {
     return [null, null];
 }
 
-// Utilities for cell highlighting
+// Utilities for cell highlighting in the UI
 function highlightOff() {
     setGLUniform('highlight', 0.5);
     setGLUniform('highlightAlt', 0.5);
     setGLUniform('highlightMod', 0);
     renderSieve();
 }
-
 
 function setHighlighted(x) {
     setGLUniform('highlight', x);
@@ -52,10 +70,14 @@ function setHighlighted(x) {
 }
 
 
+
+// Width/height of sieving region, in cells
 let width = 1;
 let height = 1;
 
+// Initialize factor base
 let factorBase = [-1];
+
 
 // Main app
 function App() {
@@ -63,11 +85,13 @@ function App() {
     const [base, setBase] = useState(bigInt(0)); // Number to factor
     const [pIdx, setP] = useState(0); // Index of current prime to sieve
     
-    const [cellSize, setCellSize] = useState(30);
+    const [cellSize, setCellSize] = useState(30); // Update this value in Controls/index.js as well.
     const [relations, setRelations] = useState([]);
 
     const [openLinalg, setOpenLinalg] = useState(false);
 
+
+    // Change N, and re-initialize all parameters appropriately
     function setN(N) {
         const base = isqrt(N);
 
@@ -79,15 +103,18 @@ function App() {
         setTimeout(() => initSieve(N, base), 0);
     }
 
+
+    // Perform one sieving step.
+    // If suppressRender = true, then the sieve is not rendered. (Speeds up auto-sieving.)
     function sieve(suppressRender) {
         const p = primeList[pIdx];
         if (factorBase.includes(p)) {return;}
         const [t1, t2] = getSieve(N, p, base);
 
         const readoutInterval = (cellSize < 5) ? 100 : 10;
-
         const shouldRender = !suppressRender | (pIdx % readoutInterval === 0);
 
+        // Perform sieving step
         if (t1 !== null) {
             updateSieve(t1, p);
             if (t1 !== t2) {
@@ -96,6 +123,7 @@ function App() {
             factorBase.push(p);
         }
 
+        // Update highlight on desktop if not auto-sieving
         if (shouldRender) {
             setRelations(getRelations());
             if (window.innerWidth > 600) {
@@ -113,7 +141,7 @@ function App() {
         handleResize(width, height);
         setN(N);
     }, [cellSize, N]);
-    useEffect(() => setN(bigInt(853972440679)), []);
+    useEffect(() => setN(bigInt(853972440679)), []); // Update this value in Controls/index.js as well.
     useEffect(() => {
         setRelations([]);
         factorBase = [-1];
@@ -128,6 +156,7 @@ function App() {
     }
 
 
+    // Highlight cells which will be sieved in the next step
     function highlightResidues(p) {
         const [t1, t2] = getSieve(N, p, base);
         if (t1 === null) {
