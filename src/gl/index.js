@@ -196,7 +196,6 @@ function updateSieve(residue, prime) {
 
 function renderSieve() {
     // Render to screen
-    console.log('render', state);
     setState('pass', 2);
     gl.bindTexture(gl.TEXTURE_2D, currentState);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -206,17 +205,19 @@ function renderSieve() {
 function getRelations() {
     renderSieve();
 
+    const {baseOffset} = state;
     const {width, height} = gl.canvas;
     const data = new Uint8Array(4*width*height);
     gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
 
+    console.log(width*height, baseOffset);
+
     const relations = [];
     for (let i = 0; i < width*height; i++) {
         if (data[4*i+3] < 255) {
-            relations.push(i);
+            relations.push(i - baseOffset);
         }
     }
-    console.log(relations);
     return relations;
 }
 

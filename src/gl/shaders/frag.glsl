@@ -30,9 +30,9 @@ vec4 encode(float value) {
 
     vec4 encoded = vec4(0.0, 0.0, 0.0, 0.0);
     for (int i = 0; i < 4; i++) {
-        value *= 255.999;
+        value *= 255.9999;
         float pixel = floor(value);
-        value -= pixel;
+        value = fract(value);
         encoded[i] = pixel/255.0;
     }
     // To account for rounding bias

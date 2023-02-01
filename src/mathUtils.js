@@ -60,18 +60,22 @@ function modSqrt(a, p) {
 function isqrt(n) {
     if (n.leq(2)) { return n; }
 
-    let curr = n;
-    let next = curr.plus(n.divide(curr)).divide(2);
+    let L = bigInt(0);
+    let R = n.plus(1);
 
-    while (next < curr) {
-        curr = next;
-        next = curr.plus(n.divide(curr)).divide(2);
+    while (R.minus(L).neq(1)) {
+        let M = L.plus(R).divide(2);
+        if (M.times(M).leq(n)) {
+            L = M;
+        } else {
+            R = M;
+        }
     }
-    return curr;
+    return L;
 }
 
 
-// Generate the first 10000 primes
+// Generate primes up to MAX
 const MAX = 1000000;
 const sieve = new Array(MAX).fill(true);
 

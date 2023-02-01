@@ -1,8 +1,8 @@
 {
-  "name": "ising-spin",
+  "name": "quadratic-sieve",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://samuelj.li/ising-spin-model",
+  "homepage": "https://samuelj.li/quadratic-sieve",
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "big-integer": "^1.6.51",

@@ -1,0 +1,67 @@
+function display(mat) {
+    for (let row of mat){
+        console.log(row.toString());
+    }
+    console.log('end mat');
+}
+
+///////////////////////////////////
+
+
+    const signRow = y.map(yy => yy.lt(0) ? 1 : 0);
+    const mat = [signRow];
+    for (let p of factorBase.slice(1)) {
+        const row = [];
+        for (let yy of y) {
+            row.push(yy.mod(p) == 0 ? 1 : 0);
+        }
+        mat.push(row);
+    }
+
+///////////////////////////////////////
+
+
+    // Construct matrix of factors.
+    const mat = [];
+    for (let yy of y) {
+        const row = [yy.lt(0) ? 1 : 0];
+        for (let p of factorBase.slice(1)) {
+            row.push(yy.mod(p) == 0 ? 1 : 0);
+        }
+        mat.push(row);
+    }
+
+    // Prune false positives out of the matrix
+    const prunedX = [];
+    const prunedY = [];
+    const prunedMat = [];
+    let bad = 0;
+    for (let i = 0; i < mat.length; i++) {
+        const row = mat[i];
+        let yy = y[i];
+        console.log(row.toString(), yy, factorBase);
+
+        for (let j = 0; j < row.length; j++) {
+            if (row[j]) {
+                yy = yy.divide(factorBase[j]);
+            }
+        }
+        if (yy.eq(1)) {
+            prunedX.push(x[i]);
+            prunedY.push(y[i]);
+            prunedMat.push(row);
+        } else {
+            bad++;
+        }
+    }
+    console.log('Pruned ', bad, ' bad relations');
+
+    // Take the transpose
+    const matT = [];
+    for (let j = 0; j < prunedMat[0].length; j++) {
+        const row = [];
+        for (let i = 0; i < prunedMat.length; i++) {
+            row.push(prunedMat[i][j]);
+        }
+        matT.push(row);
+    }

@@ -12,14 +12,16 @@ function Entry({name, value}) {
     </div>
 }
 
-function Infobar({relations, factorBase, base, shift}) {
-    const done = relations.length > factorBase.length;
+const safetyMargin = 5;
+
+function Infobar({relations, factorBase, base, shift, onFinish}) {
+    const done = relations.length > factorBase.length + safetyMargin;
 
     return <div className='info-bar'>
-        <Entry name='Relations Needed' value={factorBase.length + 1}/>
+        <Entry name='Relations Needed' value={factorBase.length + 1 + safetyMargin}/>
         <Entry name='Relations Found' value={relations.length}/>
         <div className='finish'>
-            <Button disabled={!done} variant='outlined'>Complete Factorization</Button>
+            <Button disabled={!done} onClick={onFinish} variant='outlined'>Complete Factorization</Button>
             {done ? null : <p className='warning'>Not enough relations! Sieve for longer, or decrease the cell size.</p>}
         </div>
         <div className='entry footer'>

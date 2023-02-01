@@ -5,6 +5,7 @@ import Graphics from './components/Graphics';
 import Controls from './components/Controls';
 import Infobar from './components/Infobar';
 import HelpText from './components/HelpText';
+import Linalg from './components/Linalg';
 
 import 'katex/dist/katex.min.css';
 
@@ -54,7 +55,7 @@ function setHighlighted(x) {
 let width = 1;
 let height = 1;
 
-let factorBase = [];
+let factorBase = [-1];
 
 // Main app
 function App() {
@@ -62,9 +63,10 @@ function App() {
     const [base, setBase] = useState(bigInt(0)); // Number to factor
     const [pIdx, setP] = useState(0); // Index of current prime to sieve
     
-    const [cellSize, setCellSize] = useState(40);
-
+    const [cellSize, setCellSize] = useState(30);
     const [relations, setRelations] = useState([]);
+
+    const [openLinalg, setOpenLinalg] = useState(false);
 
     function setN(N) {
         const base = isqrt(N);
@@ -79,6 +81,7 @@ function App() {
 
     function sieve(suppressRender) {
         const p = primeList[pIdx];
+        if (factorBase.includes(p)) {return;}
         const [t1, t2] = getSieve(N, p, base);
 
         const readoutInterval = (cellSize < 5) ? 100 : 10;
@@ -113,14 +116,13 @@ function App() {
     useEffect(() => setN(bigInt(853972440679)), []);
     useEffect(() => {
         setRelations([]);
-        factorBase = [];
+        factorBase = [-1];
     }, [base]);
 
 
     // Prevent zoom on mobile
     const preventDefault = (e) => e.preventDefault();
     function registerListener() {
-        console.log('asdf');
         document.addEventListener('gesturestart', preventDefault, {passive: false});
         document.addEventListener('touchmove', preventDefault, {passive: false});
     }
@@ -152,14 +154,24 @@ function App() {
             sieve={sieve}
             setHighlight={(v) => v ? highlightResidues(primeList[pIdx]) : highlightOff()}
             setCellSize={setCellSize}
+            linalgOpen={openLinalg}
         />
         <Infobar
             relations={relations}
             factorBase={factorBase}
             base={base}
             shift={Math.round(width*height/2)} 
+            onFinish={() => setOpenLinalg(true)}
         />
         <HelpText onClose={registerListener}/>
+        <Linalg
+            open={openLinalg}
+            handleClose={() => setOpenLinalg(false)}
+            relations={relations}
+            factorBase={factorBase}
+            N={N}
+            base={base}
+        />
     </>;
 }
 

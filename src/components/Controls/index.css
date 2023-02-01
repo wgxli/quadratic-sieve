@@ -24,6 +24,10 @@
     align-items: center;
 }
 
+.input-wrapper .N {
+    margin-bottom: 20px;
+}
+
 .sieve-wrapper {
     display: flex;
     flex-direction: column;
@@ -39,7 +43,6 @@
 }
 
 .cell-size {
-    margin-top: -16px;
     width: 80px;
     margin-left: 20px;
 }
