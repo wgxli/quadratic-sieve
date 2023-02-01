@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/quadratic-sieve/precache-manifest.ed05b70929655b3f70f7146833cb263c.js"
+  "/quadratic-sieve/precache-manifest.579d121f5d78cb22ba28cfa542986b1d.js"
 );
 
 self.addEventListener('message', (event) => {
