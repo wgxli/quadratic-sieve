@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {BlockMath} from 'react-katex';
+import {InlineMath, BlockMath} from 'react-katex';
 
 import bigInt from 'big-integer';
 import {isqrt} from '../../mathUtils';
@@ -37,7 +37,13 @@ function ixor(a, b) {
 }
 
 // Computes row-reduced echelon form (RREF) of a matrix over GF(2).
-function rowReduce(matrix) {
+function rowReduce(mat) {
+    // Copy matrix
+    const matrix = [];
+    for (let row of mat) {
+        matrix.push([...row]);
+    }
+
     const cols = matrix[0].length;
 
     // Gaussian elimination
@@ -63,6 +69,8 @@ function rowReduce(matrix) {
         matrix[i] = matrix[target];
         matrix[target] = temp;
     }
+
+    return matrix;
 }
 
 // Computes kth vector in basis of null-space of a matrix (assumed to be in RREF).
@@ -82,13 +90,11 @@ function nullSpace(mat, k) {
     // Find all pivot columns including i
     for (let i = 0; i < mat.length; i++) {
         if (mat[i][j] === 1) {
-            console.log(i);
             output.push(pivots[i]);
         }
     }
     return output;
 }
-
 
 // Computes the binary matrix of exponent vectors
 // given a list of relations. 
@@ -141,12 +147,19 @@ function computeMatrix(relations, factorBase, N, base) {
     }
 
     // Prune out unused factor base primes (from failed relations)
-    matT = matT.filter(row => row.includes(1));
-    if (matT.length >= matT[0].length) {
+    let prunedFactorBase = [];
+    let prunedMat = [];
+    for (let i = 0; i < matT.length; i++) {
+        if (matT[i].includes(1)) {
+            prunedFactorBase.push(factorBase[i]);
+            prunedMat.push(matT[i]);
+        }
+    }
+    if (prunedMat.length >= prunedMat[0].length) {
         return {bad};
     }
 
-    return {x, y, mat: matT};
+    return {x, y, mat: prunedMat, prunedFactorBase};
 }
 
 // Assemble relations into a square
@@ -160,28 +173,48 @@ function computeMatrix(relations, factorBase, N, base) {
 //
 // Since y = x^2 (mod N), it follows that a^2 = s^2 mod N,
 // as desired.
-function completeFactorization(x, y, mat, N) {
-    rowReduce(mat);
+function completeFactorization(x, mat, N, factorBase) {
+    const reducedMat = rowReduce(mat);
     const nullity = mat[0].length - mat.length;
 
     for (let i = 0; i < nullity; i++) {
         // Compute null space vector
-        const nullVec = nullSpace(mat, i);
+        const nullVec = nullSpace(reducedMat, i);
+        console.log('Nullspace vector ', i, ': ', nullVec);
 
-        // Get corresponding congruence of squares
-        console.log('Constructing congruence for nullspace vector ', i);
+        // Construct product of appropriate x
+        console.log('Constructing a...');
         let a = bigInt(1);
-        let b = bigInt(1);
         for (let i of nullVec) {
             a = a.times(x[i]).mod(N);
-            b = b.times(y[i]);
         }
         a = a.abs();
-        const s = isqrt(b);
-//        console.log(s.times(s), b); // Should be equal
-        const c = s.mod(N);
-        if (a.neq(c) & a.plus(c).neq(N)) {
-            return [a, c, nullVec.length];
+
+        // Construct exponent vector for b
+        console.log('Constructing b...');
+        const expvecB = [];
+        for (let i = 0; i < mat.length; i++) {
+            let entry = 0;
+            let row = mat[i];
+            for (let j of nullVec) {
+                entry += row[j];
+            }
+            expvecB.push(entry/2);
+        }
+        console.log('factorBase', factorBase)
+        console.log('bExpVec', expvecB);
+
+        // Construct b
+        let b = bigInt(1);
+        for (let i = 1; i < expvecB.length; i++) {
+            if (expvecB[i] === 0) {continue;}
+            const factor = bigInt(factorBase[i]).pow(expvecB[i]);
+            b = b.times(factor).mod(N);
+        }
+
+        console.log('a', a, 'b', b);
+        if (a.neq(b) & a.plus(b).neq(N)) {
+            return [a, b, nullVec.length];
         }
     }
     return [null, null];
@@ -195,7 +228,7 @@ function Linalg({open, handleClose, relations, factorBase, N, base}) {
     useEffect(() => {
         if (!open) {setResult(null); setError(false); return;}
         setTimeout(() => {
-            const {x, y, mat, bad} = computeMatrix(relations, factorBase, N, base);
+            const {x, y, mat, bad, prunedFactorBase} = computeMatrix(relations, factorBase, N, base);
             if (mat === undefined) {
                 setError(<>
                     <p>{`Too many (${bad}) relations failed verification. Continue sieving.`}</p>
@@ -203,10 +236,13 @@ function Linalg({open, handleClose, relations, factorBase, N, base}) {
                 </>);
                 return;
             }
-            const [a, b, l] = completeFactorization(x, y, mat, N);
+            const [a, b, l] = completeFactorization(x, mat, N, prunedFactorBase);
 
             if (a == null) {
-                setError('Failed to find a nontrivial factor! Are you sure the number is composite?');
+                setError(<>
+                    <p>Failed to find a nontrivial factor! Are you sure the number is composite?</p>
+                    <p>The sieve may also fail if <InlineMath>N</InlineMath> is even or a square.</p>
+                </>);
             } else {
                 let p = bigInt.gcd(a.plus(b), N);
                 let q = N.divide(p);
@@ -222,7 +258,7 @@ function Linalg({open, handleClose, relations, factorBase, N, base}) {
         >
         <div className='linalg-text' onClick={(e) => e.stopPropagation()}>
 
-            {error ? <p>{error}</p> :
+            {error ||
                 (result === null ? 'Constructing square congruence (may take a while)...' : <>
                     Combining {result.length} of the relations gives the congruence
                     <BlockMath>{`${result.a.toString()}^2`}</BlockMath>
