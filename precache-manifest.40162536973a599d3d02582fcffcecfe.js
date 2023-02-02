@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "a942a78349cdc9f1d7a2e193d4d40d13",
+    "revision": "c86c1eabc9204ee944492b682effbe26",
     "url": "/quadratic-sieve/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/quadratic-sieve/static/css/2.65a73a0e.chunk.css"
   },
   {
-    "revision": "5d04a7948e90298e32e8",
+    "revision": "5b0e48b7ebeaca4f6056",
     "url": "/quadratic-sieve/static/css/main.1e7a1fca.chunk.css"
   },
   {
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/quadratic-sieve/static/js/2.97422ac1.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "5d04a7948e90298e32e8",
-    "url": "/quadratic-sieve/static/js/main.c4c072d2.chunk.js"
+    "revision": "5b0e48b7ebeaca4f6056",
+    "url": "/quadratic-sieve/static/js/main.689f2042.chunk.js"
   },
   {
     "revision": "3197dea5fa24a36b3905",

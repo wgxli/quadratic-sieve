@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/quadratic-sieve/static/css/main.1e7a1fca.chunk.css",
-    "main.js": "/quadratic-sieve/static/js/main.c4c072d2.chunk.js",
-    "main.js.map": "/quadratic-sieve/static/js/main.c4c072d2.chunk.js.map",
+    "main.js": "/quadratic-sieve/static/js/main.689f2042.chunk.js",
+    "main.js.map": "/quadratic-sieve/static/js/main.689f2042.chunk.js.map",
     "runtime-main.js": "/quadratic-sieve/static/js/runtime-main.88554cec.js",
     "runtime-main.js.map": "/quadratic-sieve/static/js/runtime-main.88554cec.js.map",
     "static/css/2.65a73a0e.chunk.css": "/quadratic-sieve/static/css/2.65a73a0e.chunk.css",
     "static/js/2.97422ac1.chunk.js": "/quadratic-sieve/static/js/2.97422ac1.chunk.js",
     "static/js/2.97422ac1.chunk.js.map": "/quadratic-sieve/static/js/2.97422ac1.chunk.js.map",
     "index.html": "/quadratic-sieve/index.html",
-    "precache-manifest.f93aa902c0b1107db895e482b788a3a4.js": "/quadratic-sieve/precache-manifest.f93aa902c0b1107db895e482b788a3a4.js",
+    "precache-manifest.40162536973a599d3d02582fcffcecfe.js": "/quadratic-sieve/precache-manifest.40162536973a599d3d02582fcffcecfe.js",
     "service-worker.js": "/quadratic-sieve/service-worker.js",
     "static/css/2.65a73a0e.chunk.css.map": "/quadratic-sieve/static/css/2.65a73a0e.chunk.css.map",
     "static/css/main.1e7a1fca.chunk.css.map": "/quadratic-sieve/static/css/main.1e7a1fca.chunk.css.map",
@@ -21,6 +21,6 @@
     "static/css/2.65a73a0e.chunk.css",
     "static/js/2.97422ac1.chunk.js",
     "static/css/main.1e7a1fca.chunk.css",
-    "static/js/main.c4c072d2.chunk.js"
+    "static/js/main.689f2042.chunk.js"
   ]
 }
