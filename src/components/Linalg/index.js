@@ -2,8 +2,6 @@ import React, {useState, useEffect} from 'react';
 import {InlineMath, BlockMath} from 'react-katex';
 
 import bigInt from 'big-integer';
-import {isqrt} from '../../mathUtils';
-
 import './index.css';
 
 
@@ -159,7 +157,7 @@ function computeMatrix(relations, factorBase, N, base) {
         return {bad};
     }
 
-    return {x, y, mat: prunedMat, prunedFactorBase};
+    return {x, mat: prunedMat, prunedFactorBase};
 }
 
 // Assemble relations into a square
@@ -228,7 +226,7 @@ function Linalg({open, handleClose, relations, factorBase, N, base}) {
     useEffect(() => {
         if (!open) {setResult(null); setError(false); return;}
         setTimeout(() => {
-            const {x, y, mat, bad, prunedFactorBase} = computeMatrix(relations, factorBase, N, base);
+            const {x, mat, bad, prunedFactorBase} = computeMatrix(relations, factorBase, N, base);
             if (mat === undefined) {
                 setError(<>
                     <p>{`Too many (${bad}) relations failed verification. Continue sieving.`}</p>

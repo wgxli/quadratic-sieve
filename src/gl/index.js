@@ -15,15 +15,13 @@ let program = null;
 let state = {
     pass: 0, // Render pass
     baseOffset: 0, // Index offset of x_0 from start of grid
-    highlight: 0.5, // Index of square to highlight
-    highlightMod: 0, // Highlight modulo p
-    highlightAlt: 0.5, // Second residue class to highlight (optional)
 
     logSqrtN: 0,
     delta: 0, // x_0 - sqrt(N)
 
     prime: 0, // which p to sieve by
-    residue: 0, // residue mod p to sieve
+    residue1: 0.5, // residue mod p to sieve
+    residue2: 0.5, // residue mod p to sieve
 };
 
 // Location of GLSL uniforms.
@@ -173,13 +171,14 @@ function initSieve(N, base) {
     renderSieve();
 }
 
-function updateSieve(residue, prime) {
-    console.log('Sieving positions', residue, 'mod', prime);
+function updateSieve(residue1, residue2, prime) {
+    console.log('Sieving positions', residue1, ',', residue2, 'mod', prime);
 
     // Render to texture
     setState('pass', 1);
     setState('prime', prime);
-    setState('residue', residue);
+    setState('residue1', residue1);
+    setState('residue2', residue2);
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
     gl.bindTexture(gl.TEXTURE_2D, currentState);
     gl.framebufferTexture2D(

@@ -56,16 +56,16 @@ function getSieve(N, p, base) {
 
 // Utilities for cell highlighting in the UI
 function highlightOff() {
-    setGLUniform('highlight', 0.5);
-    setGLUniform('highlightAlt', 0.5);
-    setGLUniform('highlightMod', 0);
+    setGLUniform('residue1', 0.5);
+    setGLUniform('residue2', 0.5);
+    setGLUniform('prime', 0);
     renderSieve();
 }
 
 function setHighlighted(x) {
-    setGLUniform('highlight', x);
-    setGLUniform('highlightAlt', x);
-    setGLUniform('highlightMod', 0);
+    setGLUniform('residue1', x);
+    setGLUniform('residue2', x);
+    setGLUniform('prime', 0);
     renderSieve();
 }
 
@@ -99,7 +99,7 @@ function App() {
         setBase(base);
         rawSetN(N);
 
-        setGLUniform('highlightMod', 0);
+        setGLUniform('prime', 0);
         setTimeout(() => initSieve(N, base), 0);
     }
 
@@ -116,10 +116,7 @@ function App() {
 
         // Perform sieving step
         if (t1 !== null) {
-            updateSieve(t1, p);
-            if (t1 !== t2) {
-                updateSieve(t2, p);
-            }
+            updateSieve(t1, t2, p);
             factorBase.push(p);
         }
 
@@ -163,9 +160,9 @@ function App() {
             highlightOff();
             return;
        }
-        setGLUniform('highlight', t1);
-        setGLUniform('highlightAlt', t2);
-        setGLUniform('highlightMod', p);
+        setGLUniform('residue1', t1);
+        setGLUniform('residue2', t2);
+        setGLUniform('prime', p);
         renderSieve();
     }
 

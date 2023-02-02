@@ -2,16 +2,14 @@ precision highp float;
 
 uniform sampler2D u_prev;
 uniform vec2 u_resolution;
-uniform float u_highlight;
-uniform float u_highlightMod;
-uniform float u_highlightAlt;
 
 uniform float u_logSqrtN; // sqrt(N)
 uniform float u_delta; // x_0 - sqrt(N)
 uniform float u_baseOffset; // Index offset of x_0 from start of grid
 
 uniform float u_prime;
-uniform float u_residue;
+uniform float u_residue1;
+uniform float u_residue2;
 
 uniform float u_pass;
 varying vec2 v_texCoord;
@@ -69,10 +67,16 @@ void main() {
 //        gl_FragColor = encode(log(abs(polyOut)));
     }
 
+    float congClass = loc;
+    if (u_prime > 0.) {
+        congClass = mod(congClass+0.5, u_prime) - 0.5;
+    }
+    float highlight = min(abs(congClass - u_residue1), abs(congClass - u_residue2));
+    float log_p = log(u_prime);
+
     if (u_pass < 1.5) {
         // Sieve by provided prime and residue
-        float congClass = mod(loc - u_residue + 0.5, u_prime) - 0.5;
-        value -= log(u_prime) * clamp(1.-congClass, 0., 1.);
+        value -= log_p * clamp(1.-highlight, 0., 1.);
         gl_FragColor = encode(value);
         return;
     }
@@ -80,13 +84,6 @@ void main() {
     // Cell highlighting
     float alpha = 1.;
     vec3 color;
-
-    float residue = loc;
-    if (u_highlightMod > 0.) {
-        residue = mod(residue+0.5, u_highlightMod) - 0.5;
-    }
-    float highlight_delta = loc - u_highlight;
-    bool highlight = min(abs(residue - u_highlight), abs(residue - u_highlightAlt)) < 1e-3;
 
     // Display normal view if not highlighted
     if (value < 0.6) {
@@ -97,11 +94,11 @@ void main() {
     }
 
     // Highlight cells
-    if (highlight) {
-        if (u_highlightMod == 0.) {
+    if (highlight < 1e-3) {
+        if (u_prime == 0.) {
             color = vec3(0.4, 0.6, 0.9);
         } else {
-            color = vec3(1., 1., 1.) * (value - log(u_highlightMod))/50.;
+            color = vec3(1., 1., 1.) * (value - log_p)/50.;
         }
     }
 
